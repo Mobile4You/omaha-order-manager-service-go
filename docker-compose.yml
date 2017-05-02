@@ -1,0 +1,18 @@
+order-sse-redis:
+    image: redis
+    volumes:
+        - ./data/redis/data:/data
+    ports:
+        - "6379:6379"
+    entrypoint: redis-server
+
+order-sse-mongo:
+  image: mongo
+  log_driver: 'json-file'
+  log_opt:
+    max-size: '10MB'
+    max-file: '2'
+  ports:
+    - "28017:27017"
+  volumes:
+    - ./data/mongo/data:/data
