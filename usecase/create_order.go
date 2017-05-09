@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -12,8 +13,8 @@ import (
 	"github.com/arthurstockler/omaha-order-manager-service-go/rediscli"
 )
 
-// CreateOrder represent new order
-func CreateOrder(w http.ResponseWriter, r *http.Request) {
+// createOrder represent new order
+func createOrder(w http.ResponseWriter, r *http.Request) {
 
 	o := models.Order{}
 
@@ -24,6 +25,8 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	o.UUID = bson.NewObjectId()
 	o.CreatedAt = time.Now()
 	o.UpdatedAt = time.Now()
+
+	log.Printf("Order: %v", o)
 
 	if o.Status != models.CLOSED {
 		memOrder(w, r, o)
@@ -45,11 +48,11 @@ func closeOrder(w http.ResponseWriter, r *http.Request, o models.Order) {
 	db.Close()
 
 	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, err.Error())
+		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	RespondWithJSON(w, http.StatusCreated, o)
+	respondWithJSON(w, http.StatusCreated, o)
 }
 
 // Transactional order (status DRAFT, PAID, ENTERED)
@@ -58,9 +61,9 @@ func memOrder(w http.ResponseWriter, r *http.Request, o models.Order) {
 	err := rediscli.PutOrder(o)
 
 	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, err.Error())
+		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	RespondWithJSON(w, http.StatusCreated, o)
+	respondWithJSON(w, http.StatusCreated, o)
 }

@@ -3,9 +3,12 @@ package models
 import (
 	"time"
 
+	"github.com/go-redis/redis"
+
 	"gopkg.in/mgo.v2/bson"
 )
 
+// DRAFT is an exported
 const (
 	DRAFT   OrderStatusType = "DRAFT"
 	ENTERED OrderStatusType = "ENTERED"
@@ -14,6 +17,15 @@ const (
 )
 
 type (
+
+	// Terminal is an exported
+	Terminal struct {
+		UUID      bson.ObjectId `json:"id" bson:"_id"`
+		Number    string        `json:"number" validate:"required"`
+		CreatedAt time.Time     `json:"created_at,omitempty" bson:"created_at"`
+		UpdatedAt time.Time     `json:"updated_at,omitempty" bson:"updated_at"`
+		Sub       *redis.PubSub
+	}
 
 	// OrderStatusType is an exported
 	OrderStatusType string

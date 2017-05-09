@@ -1,6 +1,8 @@
 package db
 
 import (
+	"log"
+
 	"gopkg.in/mgo.v2"
 )
 
@@ -22,11 +24,13 @@ type MgoDb struct {
 }
 
 func init() {
+
 	if mainSession == nil {
 		var err error
 		mainSession, err = mgo.Dial(host)
 		if err != nil {
-			panic(err)
+			log.Printf("Error starting connection to database: %v", err)
+			return
 		}
 		mainSession.SetMode(mgo.Monotonic, true)
 		mainDb = mainSession.DB(database)

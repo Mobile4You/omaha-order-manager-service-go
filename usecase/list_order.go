@@ -1,7 +1,19 @@
 package usecase
 
-import "net/http"
+import (
+	"log"
+	"net/http"
 
-func ListOrder(w http.ResponseWriter, r *http.Request) {
+	"github.com/arthurstockler/omaha-order-manager-service-go/rediscli"
+)
 
+func listOrder(w http.ResponseWriter, r *http.Request) {
+
+	merchantID := r.Header.Get("merchant_id")
+
+	log.Printf("merchantID: %s", merchantID)
+
+	o := rediscli.ListOrder(merchantID)
+
+	respondWithJSON(w, http.StatusOK, o)
 }
