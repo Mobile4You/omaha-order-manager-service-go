@@ -37,6 +37,13 @@ func (c *OrderClient) putOrder(merchant string, number string, value string) (bo
 	return result.Result()
 }
 
+func (c *OrderClient) delOrder(merchant string, number string) (int64, error) {
+	c.Lock()
+	defer c.Unlock()
+	result := c.rds.HDel(merchant, number)
+	return result.Result()
+}
+
 func (c *OrderClient) getOrder(merchantID string, number string) (*models.Order, error) {
 	c.RLock()
 	defer c.RUnlock()

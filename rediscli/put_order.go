@@ -20,3 +20,11 @@ func PutOrder(o models.Order) error {
 
 	return err
 }
+
+// DelOrder in memory
+func DelOrder(o models.Order) error {
+
+	_, err := client.delOrder(o.MerchantID, o.UUID.String())
+
+	return err
+}

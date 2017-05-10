@@ -33,11 +33,11 @@ func createOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	closeOrder(w, r, o)
+	saveOrder(w, r, o)
 }
 
 // Closed order for mongodb
-func closeOrder(w http.ResponseWriter, r *http.Request, o models.Order) {
+func saveOrder(w http.ResponseWriter, r *http.Request, o models.Order) {
 
 	db := db.MgoDb{}
 

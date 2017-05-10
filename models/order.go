@@ -41,10 +41,25 @@ type (
 		MerchantID  string          `json:"merchant_id" bson:"merchant_id" validate:"required"`
 		LogicNumber string          `json:"logic_number" bson:"logic_number" validate:"required"`
 		Status      OrderStatusType `json:"status" bson:"status" validate:"required"`
+		Ref         string          `json:"ref"`
+		Items       []Item          `json:"items,omitempty" bson:"items"`
 		//Terminal     Terminal             `json:"terminal"`
-		//Items        []Item               `json:"items,omitempty" bson:"xxxxxxxxxxxxx"`
 		//Transactions []PaymentTransaction `json:"transactions,omitempty" bson:"xxxxxxxxxxxxx"`
 		//Price      int    `json:"price,omitempty" bson:"price"`
+	}
 
+	// Item is an exported
+	Item struct {
+		UUID          bson.ObjectId `json:"id" bson:"_id"`
+		CreatedAt     time.Time     `json:"created_at,omitempty" bson:"created_at"`
+		UpdatedAt     time.Time     `json:"updated_at,omitempty" bson:"updated_at"`
+		Sku           string        `json:"sku,omitempty" bson:"sku"`
+		SkuType       string        `json:"sku_type,omitempty" bson:"sku_type"`
+		Name          string        `json:"name,omitempty" bson:"name"`
+		Description   string        `json:"description,omitempty" bson:"description"`
+		UnitPrice     string        `json:"unit_price,omitempty" bson:"unit_price"`
+		Quantity      int           `json:"quantity,omitempty" bson:"quantity"`
+		UnitOfMeasure string        `json:"unit_of_measure,omitempty" bson:"unit_of_measure"`
+		Details       string        `json:"details,omitempty" bson:"details"`
 	}
 )
