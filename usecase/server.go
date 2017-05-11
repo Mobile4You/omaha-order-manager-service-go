@@ -26,14 +26,14 @@ func apiV3(router *mux.Router) {
 func apiOrder(api *mux.Router) {
 	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(listOrder))).Methods("GET")
 	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(createOrder))).Methods("POST")
-	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(listOrder))).Methods("PUT")
+	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(updateOrder))).Methods("PUT")
 	api.Handle("/orders/{order_id}/share", ensureBaseOrder(http.HandlerFunc(shareOrder))).Methods("PUT")
 }
 
 func apiItem(api *mux.Router) {
-	api.Handle("/orders/{order_id}/items", ensureBaseOrder(http.HandlerFunc(listOrder))).Methods("POST")
-	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(listOrder))).Methods("DELETE")
-	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(createOrder))).Methods("PUT")
+	api.Handle("/orders/{order_id}/items", ensureBaseOrder(http.HandlerFunc(createItem))).Methods("POST")
+	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(deleteItem))).Methods("DELETE")
+	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(updateItem))).Methods("PUT")
 }
 
 func apiChannel(api *mux.Router) {
