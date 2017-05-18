@@ -13,9 +13,6 @@ func shareOrder(w http.ResponseWriter, r *http.Request) {
 	merchantID := r.Header.Get("merchant_id")
 	orderUUID := mux.Vars(r)["order_id"]
 
-	log.Printf("merchant_id: %s", merchantID)
-	log.Printf("order_id: %s", orderUUID)
-
 	ch, err := rediscli.CreateChannel(merchantID, orderUUID)
 
 	log.Printf("channel: %v , error: %v", ch, err)

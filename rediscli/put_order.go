@@ -16,15 +16,7 @@ func PutOrder(o models.Order) error {
 
 	jsonOrder, _ := json.Marshal(o)
 
-	_, err := client.putOrder(o.MerchantID, o.UUID.String(), string(jsonOrder))
-
-	return err
-}
-
-// DelOrder in memory
-func DelOrder(o models.Order) error {
-
-	_, err := client.delOrder(o.MerchantID, o.UUID.String())
+	_, err := client.putOrder(o.MerchantID, o.UUID.Hex(), string(jsonOrder))
 
 	return err
 }

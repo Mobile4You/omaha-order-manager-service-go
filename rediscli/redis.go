@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	client = &OrderClient{}
+	client OrderClient
 )
 
 func init() {
@@ -18,6 +18,7 @@ func init() {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
+	client.channels = make(map[string]Channel, 0)
 
 	go func() {
 		for v, r := pingRegis(); r != nil; v, r = pingRegis() {

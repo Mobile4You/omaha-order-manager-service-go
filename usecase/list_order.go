@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/arthurstockler/omaha-order-manager-service-go/models"
@@ -19,6 +20,8 @@ func listOrder(w http.ResponseWriter, r *http.Request) {
 		orders := rediscli.ListOrder(merchantID)
 
 		orders = openedOrder(orders, logicNumber)
+
+		sort.Sort(models.OrderAscending(orders))
 
 		respondWithJSON(w, http.StatusOK, orders)
 

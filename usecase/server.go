@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -26,19 +27,21 @@ func apiV3(router *mux.Router) {
 func apiOrder(api *mux.Router) {
 	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(listOrder))).Methods("GET")
 	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(createOrder))).Methods("POST")
-	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(updateOrder))).Methods("PUT")
+	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(deleteOrder))).Methods("DELETE")
+	//api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(showOrder))).Methods("GET")
+	//api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(updateOrder))).Methods("PUT")
 	api.Handle("/orders/{order_id}/share", ensureBaseOrder(http.HandlerFunc(shareOrder))).Methods("PUT")
 }
 
 func apiItem(api *mux.Router) {
 	api.Handle("/orders/{order_id}/items", ensureBaseOrder(http.HandlerFunc(createItem))).Methods("POST")
 	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(deleteItem))).Methods("DELETE")
-	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(updateItem))).Methods("PUT")
+	//api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(updateItem))).Methods("PUT")
 }
 
 func apiChannel(api *mux.Router) {
 	api.Handle("/channel", ensureBaseOrder(http.HandlerFunc(listChannel))).Methods("GET")
-	api.Handle("/channel/{channel_id}/subscribe", ensureBaseOrder(http.HandlerFunc(subscribeChannel))).Methods("GET")
+	api.Handle("/channel/subscribe", ensureBaseOrder(http.HandlerFunc(subscribeChannel))).Methods("GET")
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
@@ -51,10 +54,17 @@ func respondWithString(w http.ResponseWriter, code int, payload string) {
 	w.Write([]byte(payload))
 }
 
+func respondWithCode(w http.ResponseWriter, code int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+}
+
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	w.Write(response)
+	if len(strings.TrimSpace(string(response))) != 0 {
+		w.Write(response)
+	}
 }

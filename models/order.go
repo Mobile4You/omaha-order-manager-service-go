@@ -48,6 +48,9 @@ type (
 		//Price      int    `json:"price,omitempty" bson:"price"`
 	}
 
+	// OrderAscending represents the structure Ordered
+	OrderAscending []Order
+
 	// Item is an exported
 	Item struct {
 		UUID          bson.ObjectId `json:"id" bson:"_id"`
@@ -57,9 +60,13 @@ type (
 		SkuType       string        `json:"sku_type,omitempty" bson:"sku_type"`
 		Name          string        `json:"name,omitempty" bson:"name"`
 		Description   string        `json:"description,omitempty" bson:"description"`
-		UnitPrice     string        `json:"unit_price,omitempty" bson:"unit_price"`
+		UnitPrice     int           `json:"unit_price,omitempty" bson:"unit_price"`
 		Quantity      int           `json:"quantity,omitempty" bson:"quantity"`
 		UnitOfMeasure string        `json:"unit_of_measure,omitempty" bson:"unit_of_measure"`
 		Details       string        `json:"details,omitempty" bson:"details"`
 	}
 )
+
+func (v OrderAscending) Len() int           { return len(v) }
+func (v OrderAscending) Swap(i, j int)      { v[i], v[j] = v[j], v[i] }
+func (v OrderAscending) Less(i, j int) bool { return v[j].CreatedAt.After(v[i].CreatedAt) }
