@@ -22,11 +22,11 @@ type (
 
 	// Channel is an exported
 	Channel struct {
-		UUID       string `json:"id"`
-		MerchantID string
-		Terminals  map[string]models.Terminal
-		CreatedAt  time.Time `json:"created_at"`
-		UpdatedAt  time.Time `json:"updated_at"`
+		UUID       string                     `json:"id"`
+		MerchantID string                     `json:"merchant_id"`
+		Terminals  map[string]models.Terminal `json:"terminals"`
+		CreatedAt  time.Time                  `json:"created_at"`
+		UpdatedAt  time.Time                  `json:"updated_at"`
 	}
 )
 
@@ -48,15 +48,6 @@ func (c *OrderClient) getOrder(merchantID string, number string) (*models.Order,
 	}
 	err := json.Unmarshal([]byte(jsonOrder), &o)
 	return &o, err
-}
-
-func (c *Channel) SubscribeChannel(channelID string, logicNumber string) models.Terminal {
-	t := models.Terminal{
-		Number: logicNumber,
-		Sub:    client.rds.Subscribe(channelID),
-	}
-	c.Terminals[logicNumber] = t
-	return t
 }
 
 func (c *OrderClient) getChannels(merchantID string) []Channel {

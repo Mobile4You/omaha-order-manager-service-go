@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 
@@ -16,6 +15,9 @@ import (
 // createOrder represent new order
 func createOrder(w http.ResponseWriter, r *http.Request) {
 
+	merchantID := r.Header.Get("merchant_id")
+	logicNumber := r.Header.Get("logic_number")
+
 	o := models.Order{}
 
 	// Populate the order data
@@ -23,10 +25,14 @@ func createOrder(w http.ResponseWriter, r *http.Request) {
 
 	// Add an UUID
 	o.UUID = bson.NewObjectId()
+	o.MerchantID = merchantID
 	o.CreatedAt = time.Now()
 	o.UpdatedAt = time.Now()
+	o.LogicNumber = logicNumber
 
-	log.Printf("Order: %v", o)
+	if len(o.Items) > 0 {
+		o.Items[0].UUID = bson.NewObjectId()
+	}
 
 	if o.Status != models.CLOSED {
 		memOrder(w, r, o)

@@ -26,15 +26,3 @@ func ListOrder(merchantID string) []models.Order {
 
 	return orders
 }
-
-func addOrder(filter bool, number string, o models.Order, orders *[]models.Order) {
-
-	if !filter {
-		*orders = append(*orders, o)
-		return
-	}
-
-	if number == o.LogicNumber {
-		*orders = append(*orders, o)
-	}
-}

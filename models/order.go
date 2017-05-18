@@ -64,6 +64,7 @@ type (
 		Quantity      int           `json:"quantity,omitempty" bson:"quantity"`
 		UnitOfMeasure string        `json:"unit_of_measure,omitempty" bson:"unit_of_measure"`
 		Details       string        `json:"details,omitempty" bson:"details"`
+		Ref           string        `json:"ref"`
 	}
 )
 
