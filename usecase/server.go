@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -22,6 +21,7 @@ func apiV3(router *mux.Router) {
 	apiOrder(api)
 	apiItem(api)
 	apiChannel(api)
+	apiSync(api)
 }
 
 func apiOrder(api *mux.Router) {
@@ -29,7 +29,7 @@ func apiOrder(api *mux.Router) {
 	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(createOrder))).Methods("POST")
 	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(deleteOrder))).Methods("DELETE")
 	//api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(showOrder))).Methods("GET")
-	//api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(updateOrder))).Methods("PUT")
+	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(updateOrder))).Methods("PUT")
 	api.Handle("/orders/{order_id}/share", ensureBaseOrder(http.HandlerFunc(shareOrder))).Methods("PUT")
 }
 
@@ -42,6 +42,10 @@ func apiItem(api *mux.Router) {
 func apiChannel(api *mux.Router) {
 	api.Handle("/channel", ensureBaseOrder(http.HandlerFunc(listChannel))).Methods("GET")
 	api.Handle("/channel/subscribe", ensureBaseOrder(http.HandlerFunc(subscribeChannel))).Methods("GET")
+}
+
+func apiSync(api *mux.Router) {
+	api.Handle("/sync", ensureBaseOrder(http.HandlerFunc(syncOrder))).Methods("POST")
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
@@ -64,7 +68,5 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	if len(strings.TrimSpace(string(response))) != 0 {
-		w.Write(response)
-	}
+	w.Write(response)
 }

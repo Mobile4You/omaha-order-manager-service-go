@@ -42,6 +42,7 @@ type (
 		LogicNumber string          `json:"logic_number" bson:"logic_number" validate:"required"`
 		Status      OrderStatusType `json:"status" bson:"status" validate:"required"`
 		Ref         string          `json:"ref"`
+		SyncCode    int             `json:"sync_code"`
 		Items       []Item          `json:"items,omitempty" bson:"items"`
 		//Terminal     Terminal             `json:"terminal"`
 		//Transactions []PaymentTransaction `json:"transactions,omitempty" bson:"xxxxxxxxxxxxx"`
