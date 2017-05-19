@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -17,6 +18,7 @@ func createItem(w http.ResponseWriter, r *http.Request) {
 
 	orderUUID := mux.Vars(r)["order_id"]
 	merchantID := r.Header.Get("merchant_id")
+	SHARED := r.Header.Get("SHARED")
 
 	order, err := rediscli.FindOrder(merchantID, orderUUID)
 	if err != nil || len(strings.TrimSpace(order.UUID.String())) == 0 {
@@ -41,5 +43,12 @@ func createItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if strings.TrimSpace(SHARED) == "true" {
+		log.Print("VEIO TRUE")
+		rediscli.Pubsub(order.UUID.Hex(), i)
+		respondWithCode(w, http.StatusCreated)
+		return
+	}
+	log.Print("VEIO FALSE")
 	respondWithJSON(w, http.StatusCreated, i)
 }

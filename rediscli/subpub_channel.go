@@ -22,7 +22,6 @@ func SubPub(channelUUID string, merchantUUID string, logicNumber string) (models
 
 		terminal = models.Terminal{
 			Number: logicNumber,
-			Sub:    client.rds.Subscribe(channelUUID),
 		}
 
 		ch.Terminals[logicNumber] = terminal

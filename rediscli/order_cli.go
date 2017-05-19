@@ -27,6 +27,7 @@ type (
 		Terminals  map[string]models.Terminal `json:"terminals"`
 		CreatedAt  time.Time                  `json:"created_at"`
 		UpdatedAt  time.Time                  `json:"updated_at"`
+		Conn       *redis.PubSub
 	}
 )
 
@@ -79,6 +80,7 @@ func (c *OrderClient) createChannel(merchantID string, number string) (*Channel,
 			Terminals:  make(map[string]models.Terminal),
 			CreatedAt:  time.Now(),
 			UpdatedAt:  time.Now(),
+			Conn:       client.rds.Subscribe(number),
 		}
 		c.channels[number] = ch
 	}
