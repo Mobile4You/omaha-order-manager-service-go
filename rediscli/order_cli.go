@@ -63,8 +63,8 @@ func (c *OrderClient) getChannels(merchantID string) []Channel {
 	return ret
 }
 
-func (c *OrderClient) createChannel(merchantID string, number string) (*Channel, error) {
-	_, err := c.getOrder(merchantID, number)
+func (c *OrderClient) createChannel(merchantID string, uuid string) (*Channel, error) {
+	_, err := c.getOrder(merchantID, uuid)
 	if err != nil {
 		return nil, errors.New("order not found")
 	}
@@ -72,24 +72,33 @@ func (c *OrderClient) createChannel(merchantID string, number string) (*Channel,
 	c.Lock()
 	defer c.Unlock()
 
-	ch, ok := c.channels[number]
+	ch, ok := c.channels[uuid]
 	if !ok {
 		ch = Channel{
-			UUID:       number,
+			UUID:       uuid,
 			MerchantID: merchantID,
 			Terminals:  make(map[string]models.Terminal),
 			CreatedAt:  time.Now(),
 			UpdatedAt:  time.Now(),
-			Conn:       client.rds.Subscribe(number),
+			Conn:       client.rds.Subscribe(uuid),
 		}
-		c.channels[number] = ch
+		c.channels[uuid] = ch
 	}
 	return &ch, nil
 }
 
-func (c *OrderClient) showChannel(number string) Channel {
+func (c *OrderClient) showChannel(uuid string) Channel {
 	c.Lock()
 	defer c.Unlock()
-	ch, _ := c.channels[number]
+	ch, _ := c.channels[uuid]
 	return ch
+}
+
+func (c *OrderClient) deleteChannel(uuid string) {
+	c.Lock()
+	defer c.Unlock()
+	_, ok := c.channels[uuid]
+	if ok {
+		delete(c.channels, uuid)
+	}
 }

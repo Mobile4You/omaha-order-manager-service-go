@@ -25,7 +25,7 @@ func subscribeChannel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, ch, err := rediscli.SubPub(channel, merchant, logic)
+	terminal, ch, err := rediscli.SubPub(channel, merchant, logic)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -34,7 +34,7 @@ func subscribeChannel(w http.ResponseWriter, r *http.Request) {
 	notify := w.(http.CloseNotifier).CloseNotify()
 	go func() {
 		<-notify
-		//err := rediscli.UnSubPub(terminal, ch)
+		rediscli.UnSubPub(terminal, ch)
 		log.Printf("HTTP connection just closed: %v", err)
 	}()
 

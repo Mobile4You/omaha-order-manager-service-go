@@ -10,10 +10,10 @@ import (
 func deleteItem(w http.ResponseWriter, r *http.Request) {
 
 	orderUUID := mux.Vars(r)["order_id"]
-	merchantID := r.Header.Get("merchant_id")
+	merchant := r.Header.Get("merchant_id")
 	itemUUID := mux.Vars(r)["item_id"]
 
-	order, err := rediscli.FindOrder(merchantID, orderUUID)
+	order, err := rediscli.FindOrder(merchant, orderUUID)
 	if err != nil {
 		respondWithError(w, http.StatusNotFound, err.Error())
 		return

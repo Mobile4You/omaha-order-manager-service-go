@@ -2,12 +2,10 @@ package usecase
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
-
-	"gopkg.in/mgo.v2/bson"
 
 	"github.com/arthurstockler/omaha-order-manager-service-go/models"
 	"github.com/arthurstockler/omaha-order-manager-service-go/rediscli"
@@ -18,7 +16,7 @@ func createItem(w http.ResponseWriter, r *http.Request) {
 
 	orderUUID := mux.Vars(r)["order_id"]
 	merchantID := r.Header.Get("merchant_id")
-	SHARED := r.Header.Get("SHARED")
+	share := r.FormValue("share")
 
 	order, err := rediscli.FindOrder(merchantID, orderUUID)
 	if err != nil || len(strings.TrimSpace(order.UUID.String())) == 0 {
@@ -29,11 +27,7 @@ func createItem(w http.ResponseWriter, r *http.Request) {
 	i := models.Item{}
 	json.NewDecoder(r.Body).Decode(&i)
 
-	// Add an UUID
-	i.UUID = bson.NewObjectId()
-	i.CreatedAt = time.Now()
-	i.UpdatedAt = time.Now()
-
+	buildItem(&i)
 	order.Items = append(order.Items, i)
 	order.UpdatedAt = time.Now()
 
@@ -43,12 +37,9 @@ func createItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if strings.TrimSpace(SHARED) == "true" {
-		log.Print("VEIO TRUE")
+	if shared, _ := strconv.ParseBool(share); shared {
 		rediscli.Pubsub(order.UUID.Hex(), i)
-		respondWithCode(w, http.StatusCreated)
-		return
 	}
-	log.Print("VEIO FALSE")
+
 	respondWithJSON(w, http.StatusCreated, i)
 }
