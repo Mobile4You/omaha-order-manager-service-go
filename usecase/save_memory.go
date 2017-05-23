@@ -9,7 +9,5 @@ func saveMemory(o *models.Order) {
 	err := rediscli.PutOrder(*o)
 	if err != nil {
 		o.SyncCode = 400
-		return
 	}
-	o.SyncCode = 200
 }

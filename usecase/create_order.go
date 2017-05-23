@@ -24,7 +24,7 @@ func createOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buildOrder(&o, merchant, &logic)
+	buildOrder(&o, merchant, logic)
 
 	respondWithJSON(w, http.StatusOK, o)
 

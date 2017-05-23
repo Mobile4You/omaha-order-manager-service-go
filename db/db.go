@@ -32,7 +32,7 @@ func init() {
 			log.Printf("Error starting connection to database: %v", err)
 			return
 		}
-		mainSession.SetMode(mgo.Monotonic, true)
+		mainSession.SetMode(mgo.Primary, true)
 		mainDb = mainSession.DB(database)
 	}
 }

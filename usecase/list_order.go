@@ -9,7 +9,8 @@ import (
 	"github.com/arthurstockler/omaha-order-manager-service-go/rediscli"
 )
 
-func listOrder(w http.ResponseWriter, r *http.Request) {
+// ListOrder exported
+func ListOrder(w http.ResponseWriter, r *http.Request) {
 
 	merchantID := r.Header.Get("merchant_id")
 	logicNumber := r.Header.Get("logic_number")
