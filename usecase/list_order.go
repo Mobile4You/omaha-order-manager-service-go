@@ -12,15 +12,15 @@ import (
 // ListOrder exported
 func ListOrder(w http.ResponseWriter, r *http.Request) {
 
-	merchantID := r.Header.Get("merchant_id")
-	logicNumber := r.Header.Get("logic_number")
+	merchant := r.Header.Get("merchant_id")
+	logic := r.Header.Get("logic_number")
 	action := r.FormValue("action")
 
 	if strings.TrimSpace(action) == "OPENED" {
 
-		orders := rediscli.ListOrder(merchantID)
+		orders := rediscli.ListOrder(merchant)
 
-		orders = openedOrder(orders, logicNumber)
+		orders = openedOrder(orders, logic)
 
 		sort.Sort(models.OrderAscending(orders))
 

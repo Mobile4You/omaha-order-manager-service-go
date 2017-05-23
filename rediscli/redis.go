@@ -4,8 +4,14 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/arthurstockler/omaha-order-manager-service-go/models"
 	"github.com/go-redis/redis"
 )
+
+// OrderMemory exported
+type OrderMemory interface {
+	PutOrder(o models.Order) error
+}
 
 var (
 	client OrderClient

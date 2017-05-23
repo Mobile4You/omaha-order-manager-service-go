@@ -26,8 +26,9 @@ func apiV3(router *mux.Router) {
 
 func apiOrder(api *mux.Router) {
 	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(ListOrder))).Methods("GET")
-	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(createOrder))).Methods("POST")
-	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(deleteOrder))).Methods("DELETE")
+	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(CreateOrder))).Methods("POST")
+	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(DeleteOrder))).Methods("DELETE")
+
 	//api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(showOrder))).Methods("GET")
 	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(updateOrder))).Methods("PUT")
 	api.Handle("/orders/{order_id}/share", ensureBaseOrder(http.HandlerFunc(shareOrder))).Methods("PUT")
