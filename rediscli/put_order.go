@@ -8,7 +8,7 @@ import (
 )
 
 // PutOrder include transactional order in memory (status DRAFT, ENTERED and PAID)
-func PutOrder(o models.Order) error {
+func (rd *ORedis) PutOrder(o models.Order) error {
 
 	if o.Status == models.CLOSED {
 		return errors.New("Not allowed to include order with status equal to closed")

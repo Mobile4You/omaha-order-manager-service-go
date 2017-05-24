@@ -9,8 +9,13 @@ import (
 )
 
 // OrderMemory exported
-type OrderMemory interface {
+type Memory interface {
 	PutOrder(o models.Order) error
+}
+
+type ORedis struct {
+	// Implement the OrderMemory interface.
+	Memory
 }
 
 var (

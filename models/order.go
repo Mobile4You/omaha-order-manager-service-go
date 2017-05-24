@@ -1,6 +1,9 @@
 package models
 
 import (
+	"errors"
+	"reflect"
+	"strings"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
@@ -16,12 +19,9 @@ const (
 
 type (
 
-	// Terminal is an exported
-	Terminal struct {
-		UUID      bson.ObjectId `json:"id" bson:"_id"`
-		Number    string        `json:"number" validate:"required"`
-		CreatedAt time.Time     `json:"created_at,omitempty" bson:"created_at"`
-		UpdatedAt time.Time     `json:"updated_at,omitempty" bson:"updated_at"`
+	// Build is an exported
+	Build interface {
+		Run(args ...interface{}) error
 	}
 
 	// OrderStatusType is an exported
@@ -29,6 +29,7 @@ type (
 
 	// Order represents the structure send lio
 	Order struct {
+		Build       interface{}     `json:"_,omitempty"`
 		UUID        bson.ObjectId   `json:"id" bson:"_id"`
 		Number      string          `json:"number,omitempty" bson:"number"`
 		Reference   string          `json:"reference,omitempty" bson:"reference"`
@@ -48,24 +49,30 @@ type (
 
 	// OrderAscending represents the structure Ordered
 	OrderAscending []Order
-
-	// Item is an exported
-	Item struct {
-		UUID          bson.ObjectId `json:"id" bson:"_id"`
-		CreatedAt     time.Time     `json:"created_at,omitempty" bson:"created_at"`
-		UpdatedAt     time.Time     `json:"updated_at,omitempty" bson:"updated_at"`
-		Sku           string        `json:"sku,omitempty" bson:"sku"`
-		SkuType       string        `json:"sku_type,omitempty" bson:"sku_type"`
-		Name          string        `json:"name,omitempty" bson:"name"`
-		Description   string        `json:"description,omitempty" bson:"description"`
-		UnitPrice     int           `json:"unit_price,omitempty" bson:"unit_price"`
-		Quantity      int           `json:"quantity,omitempty" bson:"quantity"`
-		UnitOfMeasure string        `json:"unit_of_measure,omitempty" bson:"unit_of_measure"`
-		Details       string        `json:"details,omitempty" bson:"details"`
-		Ref           string        `json:"ref"`
-	}
 )
 
 func (v OrderAscending) Len() int           { return len(v) }
 func (v OrderAscending) Swap(i, j int)      { v[i], v[j] = v[j], v[i] }
 func (v OrderAscending) Less(i, j int) bool { return v[j].CreatedAt.After(v[i].CreatedAt) }
+
+func (o *Order) Run(args ...interface{}) error {
+	if len(o.Items) < 1 {
+		return errors.New("order without items")
+	}
+
+	o.SyncCode = 200
+	if len(strings.TrimSpace(o.UUID.Hex())) == 0 {
+		o.UUID = bson.NewObjectId()
+		o.CreatedAt = time.Now()
+		o.SyncCode = 201
+	}
+	o.UpdatedAt = time.Now()
+	o.MerchantID = reflect.ValueOf(args).Index(0).Interface().(string)
+	o.LogicNumber = reflect.ValueOf(args).Index(1).Interface().(string)
+
+	for i := 0; i < len(o.Items); i++ {
+		o.Items[i].Run()
+	}
+
+	return nil
+}

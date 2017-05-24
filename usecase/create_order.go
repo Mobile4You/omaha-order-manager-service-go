@@ -18,10 +18,14 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	// Populate the order data
 	json.NewDecoder(r.Body).Decode(&o)
 
-	if err := buildOrder(&o, merchant, logic); err != nil {
+	// if err := buildOrder(&o, merchant, logic); err != nil {
+	// 	respondWithError(w, http.StatusBadRequest, err.Error())
+	// 	return
+	// }
+
+	if err := o.Run(merchant, logic); err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-
 	respondWithJSON(w, http.StatusOK, o)
 }
