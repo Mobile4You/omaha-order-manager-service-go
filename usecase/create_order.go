@@ -22,6 +22,7 @@ func (u *UseCase) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
 	if err := u.SaveOrder(o); err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return

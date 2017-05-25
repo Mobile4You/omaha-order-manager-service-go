@@ -18,7 +18,6 @@ const (
 )
 
 type (
-
 	// BuildModel is an exported
 	BuildModel interface {
 		Build(args ...interface{}) error
