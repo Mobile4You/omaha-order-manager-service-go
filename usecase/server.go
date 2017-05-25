@@ -8,11 +8,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Init is exported
-func Init() {
+// Start is exported
+func Start() {
 	log.Println("iniciando http server ...")
+
 	router := mux.NewRouter().StrictSlash(true)
+
 	apiV3(router)
+
 	http.ListenAndServe(":8080", router)
 }
 
@@ -25,8 +28,9 @@ func apiV3(router *mux.Router) {
 }
 
 func apiOrder(api *mux.Router) {
+	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(use.CreateOrder))).Methods("POST")
+
 	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(ListOrder))).Methods("GET")
-	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(CreateOrder))).Methods("POST")
 	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(DeleteOrder))).Methods("DELETE")
 
 	//api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(showOrder))).Methods("GET")

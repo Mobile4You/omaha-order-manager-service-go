@@ -31,7 +31,8 @@ func createItem(w http.ResponseWriter, r *http.Request) {
 	order.Items = append(order.Items, i)
 	order.UpdatedAt = time.Now()
 
-	err = rediscli.PutOrder(*order)
+	re := rediscli.ORedis{}
+	err = re.PutOrder(*order)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return

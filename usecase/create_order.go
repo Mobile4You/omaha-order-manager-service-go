@@ -8,7 +8,7 @@ import (
 )
 
 // CreateOrder represent new order
-func CreateOrder(w http.ResponseWriter, r *http.Request) {
+func (u *UseCase) CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	merchant := r.Header.Get("merchant_id")
 	logic := r.Header.Get("logic_number")
@@ -18,10 +18,13 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	// Populate the order data
 	json.NewDecoder(r.Body).Decode(&o)
 
-	if err := buildOrder(&o, merchant, logic); err != nil {
+	if err := o.Build(merchant, logic); err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-
+	if err := u.SaveOrder(o); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 	respondWithJSON(w, http.StatusOK, o)
 }

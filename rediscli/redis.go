@@ -8,9 +8,19 @@ import (
 	"github.com/go-redis/redis"
 )
 
-// OrderMemory exported
-type OrderMemory interface {
+// Memory exported
+type Memory interface {
 	PutOrder(o models.Order) error
+	DeleteOrder(merchant string, uuid string) error
+	ShowOrder(merchant string, uuid string) (models.Order, error)
+	ListOrder(merchant string, uuid string) ([]models.Order, error)
+	Subscribe(channel string)
+	Publish(channel string, message string)
+}
+
+// ORedis exported
+type ORedis struct {
+	Memory
 }
 
 var (

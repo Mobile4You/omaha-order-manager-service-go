@@ -6,7 +6,8 @@ import (
 )
 
 func saveMemory(o *models.Order) {
-	err := rediscli.PutOrder(*o)
+	re := rediscli.ORedis{}
+	err := re.PutOrder(*o)
 	if err != nil {
 		o.SyncCode = 400
 	}

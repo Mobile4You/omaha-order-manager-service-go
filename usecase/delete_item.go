@@ -25,7 +25,8 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err = rediscli.PutOrder(*order); err != nil {
+	re := rediscli.ORedis{}
+	if err = re.PutOrder(*order); err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}

@@ -33,7 +33,7 @@ func updateOrder(w http.ResponseWriter, r *http.Request) {
 	newOrder.CreatedAt = o.CreatedAt
 	newOrder.LogicNumber = o.LogicNumber
 
-	buildOrder(&newOrder, merchant, "")
+	newOrder.Build(merchant, "")
 
 	respondWithJSON(w, http.StatusCreated, newOrder)
 }

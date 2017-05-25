@@ -23,7 +23,7 @@ type MgoDb struct {
 	//Col     *mgo.Collection
 }
 
-func init() {
+func start() {
 
 	if mainSession == nil {
 		var err error
