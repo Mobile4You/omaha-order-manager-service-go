@@ -6,11 +6,10 @@ import (
 	"strings"
 
 	"github.com/arthurstockler/omaha-order-manager-service-go/models"
-	"github.com/arthurstockler/omaha-order-manager-service-go/rediscli"
 )
 
 // ListOrder exported
-func ListOrder(w http.ResponseWriter, r *http.Request) {
+func (u *UseCase) ListOrder(w http.ResponseWriter, r *http.Request) {
 
 	merchant := r.Header.Get("merchant_id")
 	logic := r.Header.Get("logic_number")
@@ -18,7 +17,7 @@ func ListOrder(w http.ResponseWriter, r *http.Request) {
 
 	if strings.TrimSpace(action) == "OPENED" {
 
-		orders := rediscli.ListOrder(merchant)
+		orders := cache.ListOrder(merchant)
 
 		orders = openedOrder(orders, logic)
 

@@ -3,44 +3,36 @@ package usecase
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/arthurstockler/omaha-order-manager-service-go/models"
-	"github.com/arthurstockler/omaha-order-manager-service-go/rediscli"
 	"github.com/gorilla/mux"
 )
 
-func createItem(w http.ResponseWriter, r *http.Request) {
+// CreateItem exported
+func (u *UseCase) CreateItem(w http.ResponseWriter, r *http.Request) {
 
-	orderUUID := mux.Vars(r)["order_id"]
-	merchantID := r.Header.Get("merchant_id")
-	share := r.FormValue("share")
+	uuid := mux.Vars(r)["order_id"]
+	merchant := r.Header.Get("merchant_id")
 
-	order, err := rediscli.FindOrder(merchantID, orderUUID)
-	if err != nil || len(strings.TrimSpace(order.UUID.String())) == 0 {
+	order, err := cache.ShowOrder(merchant, uuid)
+	if err != nil {
 		respondWithError(w, http.StatusNotFound, err.Error())
 		return
 	}
 
-	i := models.Item{}
-	json.NewDecoder(r.Body).Decode(&i)
+	item := models.Item{}
+	json.NewDecoder(r.Body).Decode(&item)
 
-	buildItem(&i)
-	order.Items = append(order.Items, i)
+	item.Build()
+
+	order.Items = append(order.Items, item)
 	order.UpdatedAt = time.Now()
 
-	re := rediscli.ORedis{}
-	err = re.PutOrder(*order)
-	if err != nil {
+	if err := u.SaveOrder(*order); err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if shared, _ := strconv.ParseBool(share); shared {
-		rediscli.Pubsub(order.UUID.Hex(), i)
-	}
-
-	respondWithJSON(w, http.StatusCreated, i)
+	respondWithJSON(w, http.StatusOK, item)
 }

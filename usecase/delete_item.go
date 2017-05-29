@@ -3,17 +3,17 @@ package usecase
 import (
 	"net/http"
 
-	"github.com/arthurstockler/omaha-order-manager-service-go/rediscli"
 	"github.com/gorilla/mux"
 )
 
-func deleteItem(w http.ResponseWriter, r *http.Request) {
+// DeleteItem exported
+func (u *UseCase) DeleteItem(w http.ResponseWriter, r *http.Request) {
 
-	orderUUID := mux.Vars(r)["order_id"]
+	uuid := mux.Vars(r)["order_id"]
 	merchant := r.Header.Get("merchant_id")
 	itemUUID := mux.Vars(r)["item_id"]
 
-	order, err := rediscli.FindOrder(merchant, orderUUID)
+	order, err := cache.ShowOrder(merchant, uuid)
 	if err != nil {
 		respondWithError(w, http.StatusNotFound, err.Error())
 		return
@@ -25,11 +25,10 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	re := rediscli.ORedis{}
-	if err = re.PutOrder(*order); err != nil {
+	if err := u.SaveOrder(*order); err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	respondWithCode(w, http.StatusOK)
+	respondWithCode(w, http.StatusNoContent)
 }

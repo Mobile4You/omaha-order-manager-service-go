@@ -9,6 +9,8 @@ https://hackernoon.com/dancing-with-go-s-mutexes-92407ae927bf
 
 https://smartystreets.com/blog/2015/02/go-testing-part-1-vanillla
 https://medium.com/@matryer/5-simple-tips-and-tricks-for-writing-unit-tests-in-golang-619653f90742
+https://github.com/junegunn/redis-stat
+https://github.com/DaveBlooman/api-common/blob/master/caching/redis_cache.go
 
 API
 * N - POST Criação de Ordem

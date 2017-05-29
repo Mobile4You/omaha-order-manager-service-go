@@ -8,14 +8,34 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Start is exported
-func Start() {
+// RemoteAPI exported
+type RemoteAPI interface {
+	//feito
+	CreateOrder(w http.ResponseWriter, r *http.Request)
+	//feito
+	ListOrder(w http.ResponseWriter, r *http.Request)
+	//feito
+	UpdateOrder(w http.ResponseWriter, r *http.Request)
+	//feito
+	ShowOrder(w http.ResponseWriter, r *http.Request)
+	DeleteOrder(w http.ResponseWriter, r *http.Request)
+	//feito
+	CreateItem(w http.ResponseWriter, r *http.Request)
+	//feito
+	UpdateItem(w http.ResponseWriter, r *http.Request)
+	//feito
+	ShowItem(w http.ResponseWriter, r *http.Request)
+	//feito
+	DeleteItem(w http.ResponseWriter, r *http.Request)
+	CreateTransaction(w http.ResponseWriter, r *http.Request)
+	ListTransaction(w http.ResponseWriter, r *http.Request)
+}
+
+// ServerStart is exported
+func ServerStart() {
 	log.Println("iniciando http server ...")
-
 	router := mux.NewRouter().StrictSlash(true)
-
 	apiV3(router)
-
 	http.ListenAndServe(":8080", router)
 }
 
@@ -23,34 +43,30 @@ func apiV3(router *mux.Router) {
 	api := router.PathPrefix("/api/v3").Subrouter()
 	apiOrder(api)
 	apiItem(api)
-	apiChannel(api)
+	apiTransaction(api)
 	apiSync(api)
 }
 
 func apiOrder(api *mux.Router) {
 	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(use.CreateOrder))).Methods("POST")
-
-	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(ListOrder))).Methods("GET")
-	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(DeleteOrder))).Methods("DELETE")
-
-	//api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(showOrder))).Methods("GET")
-	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(updateOrder))).Methods("PUT")
-	api.Handle("/orders/{order_id}/share", ensureBaseOrder(http.HandlerFunc(shareOrder))).Methods("PUT")
+	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(use.ListOrder))).Methods("GET")
+	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(use.UpdateOrder))).Methods("PUT")
+	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(use.ShowOrder))).Methods("GET")
 }
 
 func apiItem(api *mux.Router) {
-	api.Handle("/orders/{order_id}/items", ensureBaseOrder(http.HandlerFunc(createItem))).Methods("POST")
-	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(deleteItem))).Methods("DELETE")
-	//api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(updateItem))).Methods("PUT")
+	api.Handle("/orders/{order_id}/items", ensureBaseOrder(http.HandlerFunc(use.CreateItem))).Methods("POST")
+	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(use.UpdateItem))).Methods("PUT")
+	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(use.ShowItem))).Methods("GET")
+	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(use.DeleteItem))).Methods("DELETE")
 }
 
-func apiChannel(api *mux.Router) {
-	api.Handle("/channel", ensureBaseOrder(http.HandlerFunc(listChannel))).Methods("GET")
-	api.Handle("/channel/subscribe", ensureBaseOrder(http.HandlerFunc(subscribeChannel))).Methods("GET")
+func apiTransaction(api *mux.Router) {
+
 }
 
 func apiSync(api *mux.Router) {
-	api.Handle("/sync", ensureBaseOrder(http.HandlerFunc(syncOrder))).Methods("POST")
+	// api.Handle("/sync", ensureBaseOrder(http.HandlerFunc(syncOrder))).Methods("POST")
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {

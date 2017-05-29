@@ -6,14 +6,14 @@ import (
 	"net/http"
 
 	"github.com/arthurstockler/omaha-order-manager-service-go/models"
-	"github.com/arthurstockler/omaha-order-manager-service-go/rediscli"
 	"github.com/gorilla/mux"
 )
 
-func updateOrder(w http.ResponseWriter, r *http.Request) {
+// UpdateOrder exported
+func (u *UseCase) UpdateOrder(w http.ResponseWriter, r *http.Request) {
 
 	merchant := r.Header.Get("merchant_id")
-	orderUUID := mux.Vars(r)["order_id"]
+	uuid := mux.Vars(r)["order_id"]
 	newOrder := models.Order{}
 
 	json.NewDecoder(r.Body).Decode(&newOrder)
@@ -23,7 +23,7 @@ func updateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	o, err := rediscli.FindOrder(merchant, orderUUID)
+	o, err := cache.ShowOrder(merchant, uuid)
 	if err != nil {
 		respondWithError(w, http.StatusNotFound, err.Error())
 		return
@@ -33,7 +33,15 @@ func updateOrder(w http.ResponseWriter, r *http.Request) {
 	newOrder.CreatedAt = o.CreatedAt
 	newOrder.LogicNumber = o.LogicNumber
 
-	newOrder.Build(merchant, "")
+	if err := newOrder.Build(merchant, o.LogicNumber); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 
-	respondWithJSON(w, http.StatusCreated, newOrder)
+	if err := u.SaveOrder(newOrder); err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, newOrder)
 }

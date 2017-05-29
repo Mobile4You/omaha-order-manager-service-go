@@ -10,7 +10,10 @@ import (
 
 // Memory exported
 type Memory interface {
+	// feito
 	PutOrder(o models.Order) error
+
+	// feito
 	DeleteOrder(merchant string, uuid string) error
 	ShowOrder(merchant string, uuid string) (models.Order, error)
 	ListOrder(merchant string, uuid string) ([]models.Order, error)

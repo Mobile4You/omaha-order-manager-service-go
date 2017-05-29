@@ -27,5 +27,5 @@ func (u *UseCase) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	respondWithJSON(w, http.StatusOK, o)
+	respondWithJSON(w, http.StatusCreated, o)
 }
