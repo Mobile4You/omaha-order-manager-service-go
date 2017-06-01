@@ -28,22 +28,20 @@ type (
 
 	// Order represents the structure send lio
 	Order struct {
-		BuildModel  interface{}     `json:"_,omitempty"`
-		UUID        bson.ObjectId   `json:"id" bson:"_id"`
-		Number      string          `json:"number,omitempty" bson:"number"`
-		Reference   string          `json:"reference,omitempty" bson:"reference"`
-		Notes       string          `json:"notes,omitempty" bson:"notes"`
-		CreatedAt   time.Time       `json:"created_at,omitempty" bson:"created_at"`
-		UpdatedAt   time.Time       `json:"updated_at,omitempty" bson:"updated_at"`
-		MerchantID  string          `json:"merchant_id" bson:"merchant_id" validate:"required"`
-		LogicNumber string          `json:"logic_number" bson:"logic_number" validate:"required"`
-		Status      OrderStatusType `json:"status" bson:"status" validate:"required"`
-		Ref         string          `json:"ref"`
-		SyncCode    int             `json:"sync_code"`
-		Items       []Item          `json:"items,omitempty" bson:"items"`
-		//Terminal     Terminal             `json:"terminal"`
-		//Transactions []PaymentTransaction `json:"transactions,omitempty" bson:"xxxxxxxxxxxxx"`
-		//Price      int    `json:"price,omitempty" bson:"price"`
+		BuildModel   interface{}     `json:"_,omitempty"`
+		UUID         bson.ObjectId   `json:"id" bson:"_id"`
+		Number       string          `json:"number,omitempty" bson:"number"`
+		Reference    string          `json:"reference,omitempty" bson:"reference"`
+		Notes        string          `json:"notes,omitempty" bson:"notes"`
+		CreatedAt    time.Time       `json:"created_at,omitempty" bson:"created_at"`
+		UpdatedAt    time.Time       `json:"updated_at,omitempty" bson:"updated_at"`
+		MerchantID   string          `json:"merchant_id" bson:"merchant_id" valid:"required"`
+		LogicNumber  string          `json:"logic_number" bson:"logic_number" valid:"required"`
+		Status       OrderStatusType `json:"status" bson:"status" valid:"required"`
+		Ref          string          `json:"ref"`
+		SyncCode     int             `json:"sync_code"`
+		Items        []Item          `json:"items,omitempty" bson:"items"`
+		Transactions []Transaction   `json:"transactions,omitempty" bson:"transactions"`
 	}
 
 	// OrderAscending represents the structure Ordered

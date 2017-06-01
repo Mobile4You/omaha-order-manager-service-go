@@ -1,4 +1,4 @@
-order-sse-redis:
+order-redis:
     image: redis
     volumes:
         - ./data/redis/data:/data
@@ -6,7 +6,7 @@ order-sse-redis:
         - "6379:6379"
     entrypoint: redis-server
 
-order-sse-mongo:
+order-mongo:
   image: mongo
   log_driver: 'json-file'
   log_opt:
@@ -16,3 +16,15 @@ order-sse-mongo:
     - "28017:27017"
   volumes:
     - ./data/mongo/data:/data
+
+order-postgresql:
+  restart: always
+  image: postgres
+  ports:
+    - "5454:5432"
+  environment:
+    - POSTGRES_DB=db-order
+    - POSTGRES_PASSWORD=order
+    - POSTGRES_USER=order
+  volumes:
+    - ./postgresql/data:/var/lib/postgresql/data

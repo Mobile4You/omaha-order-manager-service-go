@@ -10,22 +10,15 @@ import (
 
 // RemoteAPI exported
 type RemoteAPI interface {
-	//feito
+	BatchOrder(w http.ResponseWriter, r *http.Request)
 	CreateOrder(w http.ResponseWriter, r *http.Request)
-	//feito
 	ListOrder(w http.ResponseWriter, r *http.Request)
-	//feito
 	UpdateOrder(w http.ResponseWriter, r *http.Request)
-	//feito
 	ShowOrder(w http.ResponseWriter, r *http.Request)
 	DeleteOrder(w http.ResponseWriter, r *http.Request)
-	//feito
 	CreateItem(w http.ResponseWriter, r *http.Request)
-	//feito
 	UpdateItem(w http.ResponseWriter, r *http.Request)
-	//feito
 	ShowItem(w http.ResponseWriter, r *http.Request)
-	//feito
 	DeleteItem(w http.ResponseWriter, r *http.Request)
 	CreateTransaction(w http.ResponseWriter, r *http.Request)
 	ListTransaction(w http.ResponseWriter, r *http.Request)
@@ -44,29 +37,26 @@ func apiV3(router *mux.Router) {
 	apiOrder(api)
 	apiItem(api)
 	apiTransaction(api)
-	apiSync(api)
 }
 
 func apiOrder(api *mux.Router) {
-	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(use.CreateOrder))).Methods("POST")
-	api.Handle("/orders", ensureBaseOrder(http.HandlerFunc(use.ListOrder))).Methods("GET")
-	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(use.UpdateOrder))).Methods("PUT")
-	api.Handle("/orders/{order_id}", ensureBaseOrder(http.HandlerFunc(use.ShowOrder))).Methods("GET")
+	api.Handle("/orders", ensureHeader(http.HandlerFunc(use.CreateOrder))).Methods("POST")
+	api.Handle("/orders", ensureHeader(http.HandlerFunc(use.ListOrder))).Methods("GET")
+	api.Handle("/orders/{order_id}", ensureHeader(http.HandlerFunc(use.UpdateOrder))).Methods("PUT")
+	api.Handle("/orders/{order_id}", ensureHeader(http.HandlerFunc(use.ShowOrder))).Methods("GET")
+	api.Handle("/orders/batch", ensureHeader(http.HandlerFunc(use.BatchOrder))).Methods("POST")
 }
 
 func apiItem(api *mux.Router) {
-	api.Handle("/orders/{order_id}/items", ensureBaseOrder(http.HandlerFunc(use.CreateItem))).Methods("POST")
-	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(use.UpdateItem))).Methods("PUT")
-	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(use.ShowItem))).Methods("GET")
-	api.Handle("/orders/{order_id}/items/{item_id}", ensureBaseOrder(http.HandlerFunc(use.DeleteItem))).Methods("DELETE")
+	api.Handle("/orders/{order_id}/items", ensureHeader(http.HandlerFunc(use.CreateItem))).Methods("POST")
+	api.Handle("/orders/{order_id}/items/{item_id}", ensureHeader(http.HandlerFunc(use.UpdateItem))).Methods("PUT")
+	api.Handle("/orders/{order_id}/items/{item_id}", ensureHeader(http.HandlerFunc(use.ShowItem))).Methods("GET")
+	api.Handle("/orders/{order_id}/items/{item_id}", ensureHeader(http.HandlerFunc(use.DeleteItem))).Methods("DELETE")
 }
 
 func apiTransaction(api *mux.Router) {
-
-}
-
-func apiSync(api *mux.Router) {
-	// api.Handle("/sync", ensureBaseOrder(http.HandlerFunc(syncOrder))).Methods("POST")
+	api.Handle("/orders/{order_id}/transactions", ensureHeader(http.HandlerFunc(use.CreateTransaction))).Methods("POST")
+	api.Handle("/orders/{order_id}/transactions", ensureHeader(http.HandlerFunc(use.ListTransaction))).Methods("GET")
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
