@@ -28,8 +28,21 @@ func (u *UseCase) ListOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//TODO: CLOSED ORDER
-	respondWithJSON(w, http.StatusOK, action)
+	respondWithJSON(w, http.StatusOK, closedOrder(u))
+}
+
+func closedOrder(u *UseCase) []models.JSONB{
+
+	var dbOrders []models.OrderPg
+	u.DB.Table("orders").Find(&dbOrders)
+
+	orders := make([]models.JSONB, 0)
+
+	for _, v := range dbOrders {
+		orders = append(orders, v.Payload)
+	}
+
+	return orders
 }
 
 func openedOrder(orders []models.Order, number string) []models.Order {

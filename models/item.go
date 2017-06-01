@@ -4,33 +4,33 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/mgo.v2/bson"
+	"github.com/satori/go.uuid"
 )
 
 type (
 
 	// Item is an exported
 	Item struct {
-		BuildModel    interface{}   `json:"_,omitempty"`
-		UUID          bson.ObjectId `json:"id" bson:"_id"`
-		CreatedAt     time.Time     `json:"created_at,omitempty" bson:"created_at"`
-		UpdatedAt     time.Time     `json:"updated_at,omitempty" bson:"updated_at"`
-		Sku           string        `json:"sku,omitempty" bson:"sku"`
-		SkuType       string        `json:"sku_type,omitempty" bson:"sku_type"`
-		Name          string        `json:"name,omitempty" bson:"name"`
-		Description   string        `json:"description,omitempty" bson:"description"`
-		UnitPrice     int           `json:"unit_price,omitempty" bson:"unit_price"`
-		Quantity      int           `json:"quantity,omitempty" bson:"quantity"`
-		UnitOfMeasure string        `json:"unit_of_measure,omitempty" bson:"unit_of_measure"`
-		Details       string        `json:"details,omitempty" bson:"details"`
-		Ref           string        `json:"ref"`
+		BuildModel    interface{} `json:"_,omitempty"`
+		UUID          string      `json:"id"`
+		CreatedAt     time.Time   `json:"created_at,omitempty"`
+		UpdatedAt     time.Time   `json:"updated_at,omitempty"`
+		Sku           string      `json:"sku,omitempty"`
+		SkuType       string      `json:"sku_type,omitempty"`
+		Name          string      `json:"name,omitempty"`
+		Description   string      `json:"description,omitempty"`
+		UnitPrice     int         `json:"unit_price,omitempty"`
+		Quantity      int         `json:"quantity,omitempty"`
+		UnitOfMeasure string      `json:"unit_of_measure,omitempty"`
+		Details       string      `json:"details,omitempty"`
+		Ref           string      `json:"ref"`
 	}
 )
 
 // Build exported Item
 func (i *Item) Build(args ...interface{}) error {
-	if len(strings.TrimSpace(i.UUID.Hex())) == 0 {
-		i.UUID = bson.NewObjectId()
+	if len(strings.TrimSpace(i.UUID)) == 0 {
+		i.UUID = uuid.NewV4().String()
 		i.CreatedAt = time.Now()
 	}
 	i.UpdatedAt = time.Now()

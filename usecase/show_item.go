@@ -17,7 +17,7 @@ func (u *UseCase) ShowItem(w http.ResponseWriter, r *http.Request) {
 
 	if err == nil && order != nil {
 		for i := len(order.Items) - 1; i >= 0; i-- {
-			if order.Items[i].UUID.Hex() == itemUUID {
+			if order.Items[i].UUID == itemUUID {
 				respondWithJSON(w, http.StatusOK, order.Items[i])
 				return
 			}

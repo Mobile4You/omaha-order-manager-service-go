@@ -26,7 +26,7 @@ func (u *UseCase) UpdateItem(w http.ResponseWriter, r *http.Request) {
 	newItem.Build()
 
 	for i := len(order.Items) - 1; i >= 0; i-- {
-		if order.Items[i].UUID.Hex() == itemUUID {
+		if order.Items[i].UUID == itemUUID {
 			newItem.UUID = order.Items[i].UUID
 			order.Items = append(order.Items[:i], order.Items[i+1:]...)
 			order.Items = append(order.Items, newItem)

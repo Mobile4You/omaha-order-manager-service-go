@@ -12,6 +12,9 @@ https://medium.com/@matryer/5-simple-tips-and-tricks-for-writing-unit-tests-in-g
 https://github.com/junegunn/redis-stat
 https://github.com/DaveBlooman/api-common/blob/master/caching/redis_cache.go
 
+MOCK
+http://www.alexedwards.net/blog/organising-database-access
+
 API
 * N - POST Criação de Ordem
 * N - PUT Cancelamento de ordem = /api/v2/orders/<id>?operation=cancel

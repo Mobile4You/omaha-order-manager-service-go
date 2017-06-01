@@ -3,7 +3,6 @@ package caching
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	"github.com/arthurstockler/omaha-order-manager-service-go/models"
 )
@@ -17,8 +16,7 @@ func (c *RedisCache) PutOrder(o models.Order) error {
 
 	body, _ := json.Marshal(o)
 
-	fmt.Printf("Cliente %v", c.client)
-	_, err := c.getClient().HSet(o.MerchantID, o.UUID.Hex(), string(body)).Result()
+	_, err := c.getClient().HSet(o.MerchantID, o.UUID, string(body)).Result()
 
 	return err
 }

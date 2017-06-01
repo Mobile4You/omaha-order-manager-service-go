@@ -1,9 +1,7 @@
 package usecase
 
 import (
-	"log"
-
-	"github.com/arthurstockler/omaha-order-manager-service-go/db"
+	"encoding/json"
 	"github.com/arthurstockler/omaha-order-manager-service-go/models"
 )
 
@@ -16,18 +14,10 @@ type Persistence interface {
 // SaveOrder exported
 func (u *UseCase) SaveOrder(o models.Order) error {
 	if o.Status == models.CLOSED {
-		db := db.MgoDb{}
-		db.Open()
-		err := db.Db.C("order").Insert(&o)
-		db.Close()
-		return err
+		body, _ := json.Marshal(o)
+		dbSave := u.DB.Table("orders").Create(&models.OrderPg{Payload: body})
+		return dbSave.Error
 	}
 	err := cache.PutOrder(o)
 	return err
-}
-
-// SaveItem exported
-func (u *UseCase) SaveItem(i models.Item) error {
-	log.Print("metodo real SaveItem")
-	return nil
 }

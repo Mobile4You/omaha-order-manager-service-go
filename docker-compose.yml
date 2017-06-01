@@ -27,4 +27,4 @@ order-postgresql:
     - POSTGRES_PASSWORD=order
     - POSTGRES_USER=order
   volumes:
-    - ./postgresql/data:/var/lib/postgresql/data
+    - ./data/postgresql/data:/var/lib/postgresql/data

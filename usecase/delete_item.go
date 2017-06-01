@@ -20,7 +20,7 @@ func (u *UseCase) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for i := len(order.Items) - 1; i >= 0; i-- {
-		if order.Items[i].UUID.Hex() == itemUUID {
+		if order.Items[i].UUID == itemUUID {
 			order.Items = append(order.Items[:i], order.Items[i+1:]...)
 		}
 	}
