@@ -29,7 +29,7 @@ func (u *UseCase) CreateItem(w http.ResponseWriter, r *http.Request) {
 	order.Items = append(order.Items, item)
 	order.UpdatedAt = time.Now()
 
-	if err := u.SaveOrder(*order); err != nil {
+	if err := u.DB.Update(*order); err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}

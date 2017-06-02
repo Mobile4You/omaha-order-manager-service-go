@@ -16,14 +16,18 @@ func (u *UseCase) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	o := models.Order{}
 
 	// Populate the order data
-	json.NewDecoder(r.Body).Decode(&o)
+	err := json.NewDecoder(r.Body).Decode(&o)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	if err := o.Build(merchant, logic); err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := u.SaveOrder(o); err != nil {
+	if err := u.DB.Save(o); err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}

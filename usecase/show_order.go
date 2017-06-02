@@ -3,6 +3,7 @@ package usecase
 import (
 	"net/http"
 
+	"github.com/arthurstockler/omaha-order-manager-service-go/models"
 	"github.com/gorilla/mux"
 )
 
@@ -18,6 +19,8 @@ func (u *UseCase) ShowOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//bsuca no banco de dados
-	respondWithJSON(w, http.StatusOK, order)
+	var dbOrders models.OrderPg
+	u.DB.Conn.Table("orders").Where("uuid = ?", uuid).First(&dbOrders)
+
+	respondWithJSON(w, http.StatusOK, dbOrders.Payload)
 }

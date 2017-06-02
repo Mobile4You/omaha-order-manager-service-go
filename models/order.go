@@ -3,7 +3,9 @@ package models
 import (
 	"bytes"
 	"database/sql/driver"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -14,13 +16,55 @@ import (
 // JSONB is an exported
 type JSONB []byte
 
+// OrderStatus is an exported
+type OrderStatus int
+
 // DRAFT is an exported
 const (
-	DRAFT   OrderStatusType = "DRAFT"
-	ENTERED OrderStatusType = "ENTERED"
-	PAID    OrderStatusType = "PAID"
-	CLOSED  OrderStatusType = "CLOSED"
+	Draft OrderStatus = iota
+	Entered
+	Paid
+	Closed
+	ReEntered
 )
+
+var (
+
+	// OrderStatusToValue is an exported
+	OrderStatusToValue = map[string]OrderStatus{
+		"DRAFT":      Draft,
+		"ENTERED":    Entered,
+		"PAID":       Paid,
+		"CLOSED":     Closed,
+		"RE_ENTERED": ReEntered,
+	}
+
+	// OrderStatusToName is an exported
+	OrderStatusToName = map[OrderStatus]string{
+		Draft:     "DRAFT",
+		Entered:   "ENTERED",
+		Paid:      "PAID",
+		Closed:    "CLOSED",
+		ReEntered: "RE_ENTERED",
+	}
+)
+
+func (o OrderStatus) String() string {
+	switch o {
+	case Draft:
+		return "DRAFT"
+	case Entered:
+		return "ENTERED"
+	case Paid:
+		return "PAID"
+	case Closed:
+		return "CLOSED"
+	case ReEntered:
+		return "RE_ENTERED"
+	default:
+		return "invalid"
+	}
+}
 
 type (
 
@@ -29,31 +73,28 @@ type (
 		Build(args ...interface{}) error
 	}
 
-	// OrderStatusType is an exported
-	OrderStatusType string
-
 	// Order represents the structure send lio
 	Order struct {
-		BuildModel   interface{}     `json:"_,omitempty"`
-		UUID         string          `json:"id"`
-		Number       string          `json:"number,omitempty"`
-		Reference    string          `json:"reference,omitempty"`
-		Notes        string          `json:"notes,omitempty"`
-		CreatedAt    time.Time       `json:"created_at,omitempty"`
-		UpdatedAt    time.Time       `json:"updated_at,omitempty"`
-		MerchantID   string          `json:"merchant_id" valid:"required"`
-		LogicNumber  string          `json:"logic_number" valid:"required"`
-		Status       OrderStatusType `json:"status" valid:"required"`
-		Ref          string          `json:"ref"`
-		SyncCode     int             `json:"sync_code"`
-		Items        []Item          `json:"items,omitempty" `
-		Transactions []Transaction   `json:"transactions,omitempty"`
+		BuildModel   interface{}   `json:"_,omitempty"`
+		UUID         string        `json:"id"`
+		Number       string        `json:"number,omitempty"`
+		Reference    string        `json:"reference,omitempty"`
+		Notes        string        `json:"notes,omitempty"`
+		CreatedAt    time.Time     `json:"created_at,omitempty"`
+		UpdatedAt    time.Time     `json:"updated_at,omitempty"`
+		MerchantID   string        `json:"merchant_id" valid:"required"`
+		LogicNumber  string        `json:"logic_number" valid:"required"`
+		Status       OrderStatus   `json:"status" valid:"required"`
+		Ref          string        `json:"ref"`
+		SyncCode     int           `json:"sync_code"`
+		Items        []Item        `json:"items,omitempty" `
+		Transactions []Transaction `json:"transactions,omitempty"`
 	}
 
 	// OrderPg exported
 	OrderPg struct {
-		UUID    *string `gorm:"-"`
-		Payload JSONB   `gorm:"not null, column:payload"`
+		UUID    string `gorm:"primary_key"`
+		Payload JSONB  `gorm:"not null, column:payload"`
 	}
 
 	// OrderAscending represents the structure Ordered
@@ -68,9 +109,6 @@ func (v OrderAscending) Less(i, j int) bool { return v[j].CreatedAt.After(v[i].C
 func (o *Order) Build(args ...interface{}) error {
 	if len(o.Items) < 1 {
 		return errors.New("order without items")
-	}
-	if len(o.Status) == 0 {
-		o.Status = DRAFT
 	}
 	o.SyncCode = 200
 	if len(strings.TrimSpace(o.UUID)) == 0 {
@@ -140,4 +178,32 @@ func (j JSONB) IsNull() bool {
 // Equals exported
 func (j JSONB) Equals(j1 JSONB) bool {
 	return bytes.Equal([]byte(j), []byte(j1))
+}
+
+// UnmarshalJSON sets *m to a copy of data.
+func (o *OrderStatus) UnmarshalJSON(data []byte) error {
+	var s string
+
+	if err := json.Unmarshal(data, &s); err != nil {
+		return fmt.Errorf("OrderStatus should be a string, got %s", data)
+	}
+
+	v, ok := OrderStatusToValue[strings.ToUpper(s)]
+	if !ok {
+		return fmt.Errorf("invalid OrderStatus %q", s)
+	}
+	*o = v
+	return nil
+}
+
+// MarshalJSON returns *o as the JSON encoding of m.
+func (o OrderStatus) MarshalJSON() ([]byte, error) {
+	if s, ok := interface{}(o).(fmt.Stringer); ok {
+		return json.Marshal(s.String())
+	}
+	s, ok := OrderStatusToName[o]
+	if !ok {
+		return nil, fmt.Errorf("invalid OrderStatus: %d", o)
+	}
+	return json.Marshal(s)
 }

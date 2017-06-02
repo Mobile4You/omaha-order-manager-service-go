@@ -33,7 +33,7 @@ func (u *UseCase) UpdateItem(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err := u.SaveOrder(*order); err != nil {
+	if err := u.DB.Update(*order); err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}

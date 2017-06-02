@@ -1,22 +1,31 @@
 package routes
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/arthurstockler/omaha-order-manager-service-go/config"
 	"github.com/arthurstockler/omaha-order-manager-service-go/usecase"
 	"github.com/gorilla/mux"
 )
 
 // Router exported
 type Router struct {
-	Use *usecase.UseCase
+	Use   *usecase.UseCase
+	Rhttp *config.YmlHTTP
 }
 
 // ServerStart is exported
 func (r *Router) ServerStart() {
 	router := mux.NewRouter().StrictSlash(true)
 	apiV3(r, router)
-	http.ListenAndServe(":8080", router)
+	srv := &http.Server{
+		Handler: router,
+		Addr:    fmt.Sprintf("%s:%d", r.Rhttp.Host, r.Rhttp.Port),
+	}
+	fmt.Printf("starting http server %v", srv.Addr)
+	log.Fatal(srv.ListenAndServe())
 }
 
 func apiV3(r *Router, router *mux.Router) {
@@ -30,6 +39,7 @@ func apiOrder(r *Router, api *mux.Router) {
 	api.Handle("/orders", ensureHeader(http.HandlerFunc(r.Use.CreateOrder))).Methods("POST")
 	api.Handle("/orders", ensureHeader(http.HandlerFunc(r.Use.ListOrder))).Methods("GET")
 	api.Handle("/orders/{order_id}", ensureHeader(http.HandlerFunc(r.Use.UpdateOrder))).Methods("PUT")
+	api.Handle("/orders/{order_id}/operation/{status}", ensureHeader(http.HandlerFunc(r.Use.OperationOrder))).Methods("PUT")
 	api.Handle("/orders/{order_id}", ensureHeader(http.HandlerFunc(r.Use.ShowOrder))).Methods("GET")
 	api.Handle("/orders/batch", ensureHeader(http.HandlerFunc(r.Use.BatchOrder))).Methods("POST")
 }

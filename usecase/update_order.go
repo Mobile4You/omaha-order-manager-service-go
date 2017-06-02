@@ -30,6 +30,7 @@ func (u *UseCase) UpdateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newOrder.UUID = o.UUID
+	newOrder.Status = o.Status
 	newOrder.CreatedAt = o.CreatedAt
 	newOrder.LogicNumber = o.LogicNumber
 
@@ -38,7 +39,7 @@ func (u *UseCase) UpdateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := u.SaveOrder(newOrder); err != nil {
+	if err := u.DB.Update(newOrder); err != nil {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}

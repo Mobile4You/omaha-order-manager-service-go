@@ -34,7 +34,7 @@ func (u *UseCase) ListOrder(w http.ResponseWriter, r *http.Request) {
 func closedOrder(u *UseCase) []models.JSONB{
 
 	var dbOrders []models.OrderPg
-	u.DB.Table("orders").Find(&dbOrders)
+	u.DB.Conn.Table("orders").Find(&dbOrders)
 
 	orders := make([]models.JSONB, 0)
 
@@ -48,7 +48,7 @@ func closedOrder(u *UseCase) []models.JSONB{
 func openedOrder(orders []models.Order, number string) []models.Order {
 
 	testOpen := func(o models.Order) bool {
-		if o.Status == models.CLOSED {
+		if o.Status == models.Closed {
 			return false
 		}
 

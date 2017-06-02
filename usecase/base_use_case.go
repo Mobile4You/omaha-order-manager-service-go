@@ -22,16 +22,22 @@ type RemoteAPI interface {
 	DeleteItem(w http.ResponseWriter, r *http.Request)
 	CreateTransaction(w http.ResponseWriter, r *http.Request)
 	ListTransaction(w http.ResponseWriter, r *http.Request)
+	OperationOrder(w http.ResponseWriter, r *http.Request)
 }
 
 var (
 	cache caching.RedisCache
 )
 
+// Store exported
+type Store struct {
+	Conn *gorm.DB
+	Persistence
+}
+
 // UseCase exported
 type UseCase struct {
-	DB *gorm.DB
-	Persistence
+	DB *Store
 	RemoteAPI
 }
 

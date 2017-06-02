@@ -10,7 +10,7 @@ import (
 // PutOrder include transactional order in memory (status DRAFT, ENTERED and PAID)
 func (c *RedisCache) PutOrder(o models.Order) error {
 
-	if o.Status == models.CLOSED {
+	if o.Status == models.Closed {
 		return errors.New("Not allowed to include order with status equal to closed")
 	}
 
